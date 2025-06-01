@@ -27,9 +27,9 @@ const template = html<PackagesView>`
   <div class="container">
     <div class="col" id="packages">
       <search-bar
-        @reload-invoked=${(x) => x.ReloadInvoked()}
-        @filter-changed=${(x, e) =>
-          x.UpdatePackagesFilters((e.event as CustomEvent<FilterEvent>).detail)}
+        @reload-invoked=${( x ) => x.ReloadInvoked()}
+        @filter-changed=${( x, e ) =>
+    x.UpdatePackagesFilters( ( e.event as CustomEvent<FilterEvent> ).detail )}
       ></search-bar>
       <vscode-panels class="tabs" aria-label="Default">
         <vscode-panel-tab class="tab" id="tab-1">BROWSE</vscode-panel-tab>
@@ -37,51 +37,51 @@ const template = html<PackagesView>`
         <vscode-panel-view class="views" id="view-1">
           <div
             class="packages-container"
-            @scroll=${(x, e) =>
-              x.PackagesScrollEvent(e.event.target as HTMLElement)}
+            @scroll=${( x, e ) =>
+    x.PackagesScrollEvent( e.event.target as HTMLElement )}
           >
             ${when(
-              (x) => !x.packagesLoadingError,
-              html<PackagesView>`
+      ( x ) => !x.packagesLoadingError,
+      html<PackagesView>`
                 ${repeat(
-                  (x) => x.packages,
-                  html<PackageViewModel>`
+        ( x ) => x.packages,
+        html<PackageViewModel>`
                     <package-row
-                      :package=${(x) => x}
-                      @click=${(x, c: ExecutionContext<PackagesView, any>) =>
-                        c.parent.SelectPackage(x)}
+                      :package=${( x ) => x}
+                      @click=${( x, c: ExecutionContext<PackagesView, any> ) =>
+            c.parent.SelectPackage( x )}
                     >
                     </package-row>
                   `
-                )}
+      )}
                 ${when(
-                  (x) => !x.noMorePackages,
-                  html<PackagesView>`<vscode-progress-ring
+        ( x ) => !x.noMorePackages,
+        html<PackagesView>`<vscode-progress-ring
                     class="loader"
                   ></vscode-progress-ring>`
-                )}
+      )}
               `,
-              html<PackagesView>`<div class="error">
+      html<PackagesView>`<div class="error">
                 <span class="codicon codicon-error"></span> Failed to fetch
                 packages. See 'Webview Developer Tools' for more details
               </div> `
-            )}
+    )}
           </div>
         </vscode-panel-view>
         <vscode-panel-view class="views installed-packages" id="view-2">
           <div class="packages-container">
             ${repeat(
-              (x) => x.projectsPackages,
-              html<PackageViewModel>`
+      ( x ) => x.projectsPackages,
+      html<PackageViewModel>`
                 <package-row
-                  :showInstalledVersion="${(x) => true}"
-                  :package=${(x) => x}
-                  @click=${(x, c: ExecutionContext<PackagesView, any>) =>
-                    c.parent.SelectPackage(x)}
+                  :showInstalledVersion="${( x ) => true}"
+                  :package=${( x ) => x}
+                  @click=${( x, c: ExecutionContext<PackagesView, any> ) =>
+          c.parent.SelectPackage( x )}
                 >
                 </package-row>
               `
-            )}
+    )}
           </div>
         </vscode-panel-view>
       </vscode-panels>
@@ -89,40 +89,40 @@ const template = html<PackagesView>`
 
     <div class="col" id="projects">
       ${when(
-        (x) => x.selectedPackage != null,
-        html<PackagesView>`
+      ( x ) => x.selectedPackage != null,
+      html<PackagesView>`
           ${when(
-            (x) => x.selectedPackage?.Status == "Detailed",
-            html<PackagesView>`
+        ( x ) => x.selectedPackage?.Status == "Detailed",
+        html<PackagesView>`
               <div class="package-info">
                 <span class="package-title">
                   ${when(
-                    (x) => x.NugetOrgPackageUrl != null,
-                    html<PackagesView>`<a
+          ( x ) => x.NugetOrgPackageUrl != null,
+          html<PackagesView>`<a
                       target="_blank"
-                      :href=${(x) => x.NugetOrgPackageUrl}
+                      :href=${( x ) => x.NugetOrgPackageUrl}
                       ><span
                         class="package-link-icon codicon codicon-link-external"
                       ></span
-                      >${(x) => x.selectedPackage?.Name}</a
+                      >${( x ) => x.selectedPackage?.Name}</a
                     >`,
-                    html<PackagesView>`${(x) => x.selectedPackage?.Name}`
-                  )}
+          html<PackagesView>`${( x ) => x.selectedPackage?.Name}`
+        )}
                 </span>
                 <div class="version-selector">
                   <vscode-dropdown
-                    :value=${(x) => x.selectedVersion}
-                    @change=${(x, c) =>
-                      (x.selectedVersion = (c.event.target as any).value)}
+                    :value=${( x ) => x.selectedVersion}
+                    @change=${( x, c ) =>
+            ( x.selectedVersion = ( c.event.target as any ).value )}
                   >
                     ${repeat(
-                      (x) => x.selectedPackage?.Versions || [],
-                      html<string>` <vscode-option>${(x) => x}</vscode-option> `
-                    )}
+              ( x ) => x.selectedPackage?.Versions || [],
+              html<string>` <vscode-option>${( x ) => x}</vscode-option> `
+            )}
                   </vscode-dropdown>
                   <vscode-button
                     appearance="icon"
-                    @click=${(x) => x.LoadProjects()}
+                    @click=${( x ) => x.LoadProjects()}
                   >
                     <span class="codicon codicon-refresh"></span>
                   </vscode-button>
@@ -130,55 +130,55 @@ const template = html<PackagesView>`
               </div>
               <div class="projects-panel-container">
                 <package-details
-                  :package=${(x) => x.selectedPackage}
-                  :packageVersionUrl=${(x) => x.PackageVersionUrl}
-                  :source=${(x) => x.filters.SourceUrl}
+                  :package=${( x ) => x.selectedPackage}
+                  :packageVersionUrl=${( x ) => x.PackageVersionUrl}
+                  :source=${( x ) => x.filters.SourceUrl}
                 ></package-details>
                 <div class="separator"></div>
                 ${when(
-                  (x) => x.projects.length > 0,
-                  html<PackagesView>`
+              ( x ) => x.projects.length > 0,
+              html<PackagesView>`
                     ${repeat(
-                      (x) => x.projects,
-                      html<ProjectViewModel>`
+                ( x ) => x.projects,
+                html<ProjectViewModel>`
                         <project-row
                           @project-updated=${(
-                            x,
-                            c: ExecutionContext<PackagesView, any>
-                          ) => c.parent.LoadProjectsPackages()}
-                          :project=${(x) => x}
+                  x,
+                  c: ExecutionContext<PackagesView, any>
+                ) => c.parent.LoadProjectsPackages()}
+                          :project=${( x ) => x}
                           :packageId=${(
-                            x,
-                            c: ExecutionContext<PackagesView, any>
-                          ) => c.parent.selectedPackage?.Name}
+                  x,
+                  c: ExecutionContext<PackagesView, any>
+                ) => c.parent.selectedPackage?.Name}
                           :packageVersion=${(
-                            x,
-                            c: ExecutionContext<PackagesView, any>
-                          ) => c.parent.selectedVersion}
+                  x,
+                  c: ExecutionContext<PackagesView, any>
+                ) => c.parent.selectedVersion}
                         >
                         </project-row>
                       `
-                    )}
+              )}
                   `,
-                  html<PackagesView>`<div class="no-projects">
+              html<PackagesView>`<div class="no-projects">
                     <span class="codicon codicon-info"></span> No projects found
                   </div>`
-                )}
+            )}
               </div>
             `,
-            html<PackagesView>`${when(
-              (x) => x.selectedPackage?.Status == "MissingDetails",
-              html<PackagesView>`<vscode-progress-ring
+        html<PackagesView>`${when(
+          ( x ) => x.selectedPackage?.Status == "MissingDetails",
+          html<PackagesView>`<vscode-progress-ring
                 class="loader packages-details-loader "
               ></vscode-progress-ring>`,
-              html<PackagesView>`<div class="error">
+          html<PackagesView>`<div class="error">
                 <span class="codicon codicon-error"></span> Failed to fetch the
                 package from the selected registry.
               </div> `
-            )}`
-          )}
-        `
+        )}`
       )}
+        `
+    )}
     </div>
   </div>
 `;
@@ -337,11 +337,11 @@ const PACKAGE_FETCH_TAKE = 50;
 const PACKAGE_CONTAINER_SCROLL_MARGIN = 196;
 const NUGET_ORG_PREFIX = "https://api.nuget.org";
 
-@customElement({
+@customElement( {
   name: "packages-view",
   template,
   styles: [codicon, scrollableBase, styles],
-})
+} )
 export class PackagesView extends FASTElement {
   splitter: Split.Instance | null = null;
   packagesPage: number = 0;
@@ -365,21 +365,33 @@ export class PackagesView extends FASTElement {
   connectedCallback(): void {
     super.connectedCallback();
 
-    let packages: HTMLElement = this.shadowRoot?.getElementById("packages")!;
-    let projects: HTMLElement = this.shadowRoot?.getElementById("projects")!;
+    window.addEventListener( 'message', ( event ) => {
+      const message = event.data;
 
-    this.splitter = Split([packages, projects], {
+      if ( message.command === 'findType' ) {
+        this.UpdatePackagesFilters( {
+          Query: message.typeName,
+          Prerelease: this.filters.Prerelease,
+          SourceUrl: this.filters.SourceUrl
+        } );
+      }
+    } );
+
+    let packages: HTMLElement = this.shadowRoot?.getElementById( "packages" )!;
+    let projects: HTMLElement = this.shadowRoot?.getElementById( "projects" )!;
+
+    this.splitter = Split( [packages, projects], {
       sizes: [60, 40],
       gutterSize: 4,
-      gutter: (index: number, direction) => {
-        const gutter = document.createElement("div");
-        const gutterNested = document.createElement("div");
+      gutter: ( index: number, direction ) => {
+        const gutter = document.createElement( "div" );
+        const gutterNested = document.createElement( "div" );
         gutter.className = `gutter gutter-${direction}`;
         gutterNested.className = "gutter-nested";
-        gutter.appendChild(gutterNested);
+        gutter.appendChild( gutterNested );
         return gutter;
       },
-    });
+    } );
     this.filters.SourceUrl =
       this.configuration.Configuration?.Sources[0].Url ?? "";
     this.LoadPackages();
@@ -392,7 +404,7 @@ export class PackagesView extends FASTElement {
 
   @volatile
   get NugetOrgPackageUrl() {
-    if (this.filters.SourceUrl.startsWith(NUGET_ORG_PREFIX))
+    if ( this.filters.SourceUrl.startsWith( NUGET_ORG_PREFIX ) )
       return `https://www.nuget.org/packages/${this.selectedPackage?.Name}/${this.selectedVersion}`;
     else return null;
   }
@@ -409,46 +421,46 @@ export class PackagesView extends FASTElement {
 
     return (
       this.selectedPackage?.Model.Versions.filter(
-        (x) => x.Version == this.selectedVersion
+        ( x ) => x.Version == this.selectedVersion
       )[0].Id ?? ""
     );
   }
 
   LoadProjectsPackages() {
     var packages = this.projects
-      ?.flatMap((p) => p.Packages)
-      .filter((x) =>
-        x.Id.toLowerCase().includes(this.filters.Query?.toLowerCase())
+      ?.flatMap( ( p ) => p.Packages )
+      .filter( ( x ) =>
+        x.Id.toLowerCase().includes( this.filters.Query?.toLowerCase() )
       );
 
-    const grouped = packages.reduce((acc: any, item) => {
+    const grouped = packages.reduce( ( acc: any, item ) => {
       const { Id, Version } = item;
 
-      if (!acc[Id]) {
+      if ( !acc[Id] ) {
         acc[Id] = [];
       }
 
-      if (acc[Id].indexOf(Version) < 0) {
-        acc[Id].push(Version);
+      if ( acc[Id].indexOf( Version ) < 0 ) {
+        acc[Id].push( Version );
       }
 
       return acc;
-    }, {});
+    }, {} );
 
-    this.projectsPackages = Object.entries(grouped).map(
-      ([Id, Versions]) =>
+    this.projectsPackages = Object.entries( grouped ).map(
+      ( [Id, Versions] ) =>
         new PackageViewModel(
           {
             Id: Id,
             Name: Id,
             IconUrl: "",
-            Versions: (Versions as Array<string>)?.map((x) => ({
+            Versions: ( Versions as Array<string> )?.map( ( x ) => ( {
               Id: "",
               Version: x,
-            })),
+            } ) ),
             InstalledVersion:
-              (Versions as Array<string>)?.length == 1
-                ? (Versions as Array<string>)[0]
+              ( Versions as Array<string> )?.length == 1
+                ? ( Versions as Array<string> )[0]
                 : "",
             Version: "",
             Description: "",
@@ -464,72 +476,72 @@ export class PackagesView extends FASTElement {
         )
     );
 
-    for (let i = 0; i < this.projectsPackages.length; i++) {
-      this.UpdatePackage(this.projectsPackages[i]);
+    for ( let i = 0; i < this.projectsPackages.length; i++ ) {
+      this.UpdatePackage( this.projectsPackages[i] );
     }
   }
 
-  async UpdatePackage(projectPackage: PackageViewModel) {
+  async UpdatePackage( projectPackage: PackageViewModel ) {
     let result = await this.mediator.PublishAsync<
       GetPackageRequest,
       GetPackageResponse
-    >(GET_PACKAGE, {
+    >( GET_PACKAGE, {
       Id: projectPackage.Id,
       Url: this.filters.SourceUrl,
-    });
+    } );
 
-    if (result.IsFailure || !result.Package) {
+    if ( result.IsFailure || !result.Package ) {
       projectPackage.Status = "Error";
     } else {
-      if (projectPackage.Version != "") result.Package.Version = "";
-      projectPackage.UpdatePackage(result.Package);
+      if ( projectPackage.Version != "" ) result.Package.Version = "";
+      projectPackage.UpdatePackage( result.Package );
       projectPackage.Status = "Detailed";
     }
   }
 
-  UpdatePackagesFilters(filters: FilterEvent) {
+  UpdatePackagesFilters( filters: FilterEvent ) {
     this.filters = filters;
     this.LoadPackages();
     this.LoadProjectsPackages();
   }
 
-  async SelectPackage(selectedPackage: PackageViewModel) {
+  async SelectPackage( selectedPackage: PackageViewModel ) {
     this.packages
-      .filter((x) => x.Selected)
-      .forEach((x) => (x.Selected = false));
+      .filter( ( x ) => x.Selected )
+      .forEach( ( x ) => ( x.Selected = false ) );
     this.projectsPackages
-      .filter((x) => x.Selected)
-      .forEach((x) => (x.Selected = false));
+      .filter( ( x ) => x.Selected )
+      .forEach( ( x ) => ( x.Selected = false ) );
     selectedPackage.Selected = true;
     this.selectedPackage = selectedPackage;
-    if (this.selectedPackage.Status == "MissingDetails") {
+    if ( this.selectedPackage.Status == "MissingDetails" ) {
       let packageToUpdate = this.selectedPackage;
       let result = await this.mediator.PublishAsync<
         GetPackageRequest,
         GetPackageResponse
-      >(GET_PACKAGE, {
+      >( GET_PACKAGE, {
         Id: packageToUpdate.Id,
         Url: this.filters.SourceUrl,
-      });
+      } );
 
-      if (result.IsFailure || !result.Package) {
+      if ( result.IsFailure || !result.Package ) {
         packageToUpdate.Status = "Error";
       } else {
-        if (packageToUpdate.Version != "") result.Package.Version = "";
-        packageToUpdate.UpdatePackage(result.Package);
+        if ( packageToUpdate.Version != "" ) result.Package.Version = "";
+        packageToUpdate.UpdatePackage( result.Package );
         packageToUpdate.Status = "Detailed";
       }
     }
     this.selectedVersion = this.selectedPackage.Version;
   }
 
-  PackagesScrollEvent(target: HTMLElement) {
-    if (this.packagesLoadingInProgress || this.noMorePackages) return;
+  PackagesScrollEvent( target: HTMLElement ) {
+    if ( this.packagesLoadingInProgress || this.noMorePackages ) return;
     if (
       target.scrollTop + target.getBoundingClientRect().height >
       target.scrollHeight - PACKAGE_CONTAINER_SCROLL_MARGIN
     )
-      this.LoadPackages(true);
+      this.LoadPackages( true );
   }
 
   ReloadInvoked() {
@@ -537,7 +549,7 @@ export class PackagesView extends FASTElement {
     this.LoadProjectsPackages();
   }
 
-  async LoadPackages(append: boolean = false) {
+  async LoadPackages( append: boolean = false ) {
     let _getLoadPackageRequest = () => {
       return {
         Url: this.filters.SourceUrl,
@@ -550,7 +562,7 @@ export class PackagesView extends FASTElement {
 
     this.packagesLoadingError = false;
     this.packagesLoadingInProgress = true;
-    if (append == false) {
+    if ( append == false ) {
       this.packagesPage = 0;
       this.selectedPackage = null;
       this.packages = [];
@@ -558,22 +570,22 @@ export class PackagesView extends FASTElement {
     this.noMorePackages = false;
 
     let requestObject = _getLoadPackageRequest();
-    this.currentLoadPackageHash = hash(requestObject);
+    this.currentLoadPackageHash = hash( requestObject );
 
     let result = await this.mediator.PublishAsync<
       GetPackagesRequest,
       GetPackagesResponse
-    >(GET_PACKAGES, requestObject);
-    if (this.currentLoadPackageHash != hash(_getLoadPackageRequest())) return;
-    if (result.IsFailure) {
+    >( GET_PACKAGES, requestObject );
+    if ( this.currentLoadPackageHash != hash( _getLoadPackageRequest() ) ) return;
+    if ( result.IsFailure ) {
       this.packagesLoadingError = true;
     } else {
       let packagesViewModels = result.Packages!.map(
-        (x) => new PackageViewModel(x)
+        ( x ) => new PackageViewModel( x )
       );
-      if (packagesViewModels.length < requestObject.Take)
+      if ( packagesViewModels.length < requestObject.Take )
         this.noMorePackages = true;
-      this.packages.push(...packagesViewModels);
+      this.packages.push( ...packagesViewModels );
       this.packagesPage++;
       this.packagesLoadingInProgress = false;
     }
@@ -584,9 +596,9 @@ export class PackagesView extends FASTElement {
     let result = await this.mediator.PublishAsync<
       GetProjectsRequest,
       GetProjectsResponse
-    >(GET_PROJECTS, {});
+    >( GET_PROJECTS, {} );
 
-    this.projects = result.Projects.map((x) => new ProjectViewModel(x));
+    this.projects = result.Projects.map( ( x ) => new ProjectViewModel( x ) );
     this.LoadProjectsPackages();
   }
 }

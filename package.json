@@ -41,6 +41,11 @@
         "command": "nuget-gallery.sponsor",
         "title": "Sponsor Extension",
         "icon": "$(heart)"
+      },
+      {
+        "command": "nuget-gallery.findType",
+        "title": "Find Type in NuGet",
+        "category": "NuGet Gallery"
       }
     ],
     "menus": {
@@ -74,6 +79,7 @@
     "views": {
       "nugetGalleryView": [
         {
+          "icon": "resources/nuget.svg",
           "type": "webview",
           "id": "nuget.gallery.view",
           "name": "NuGet"
@@ -127,7 +133,7 @@
     "@vscode/codicons": "^0.0.35",
     "@vscode/test-cli": "^0.0.6",
     "@vscode/test-electron": "^2.3.9",
-    "esbuild": "^0.20.1",
+    "esbuild": "^0.25.5",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   },

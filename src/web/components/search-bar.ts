@@ -1,7 +1,7 @@
-import { FASTElement, css, customElement, html, observable, repeat } from "@microsoft/fast-element";
+import {FASTElement, css, customElement, html, observable, repeat} from "@microsoft/fast-element";
 
 import codicon from "@/web/styles/codicon.css";
-import { Configuration } from "../registrations";
+import {Configuration} from "../registrations";
 import lodash from "lodash";
 
 const template = html<SearchBar>`
@@ -9,27 +9,28 @@ const template = html<SearchBar>`
     <div class="search-bar-left">
       <vscode-text-field
         class="search-text-field"
-        @input=${(x, c) => x.FilterInputEvent(c.event.target!)}
+        :value=${( x ) => x.filterQuery}
+        @input=${( x, c ) => x.FilterInputEvent( c.event.target! )}
       >
         <span slot="start" class="codicon codicon-search"></span>
       </vscode-text-field>
-      <vscode-button appearance="icon" @click=${(x) => x.ReloadClicked()}>
+      <vscode-button appearance="icon" @click=${( x ) => x.ReloadClicked()}>
         <span class="codicon codicon-refresh"></span>
       </vscode-button>
     </div>
     <div class="search-bar-right">
       <vscode-dropdown
-        :value=${(x) => x.selectedSourceUrl}
-        @change=${(x, c) => x.SelectSource((c.event.target as HTMLInputElement).value)}
+        :value=${( x ) => x.selectedSourceUrl}
+        @change=${( x, c ) => x.SelectSource( ( c.event.target as HTMLInputElement ).value )}
       >
         ${repeat(
-          (x) => x.configuration.Configuration!.Sources,
-          html<Source>` <vscode-option :value="${(x) => x.Url}">${(x) => x.Name}</vscode-option> `
-        )}
+  ( x ) => x.configuration.Configuration!.Sources,
+  html<Source>` <vscode-option :value="${( x ) => x.Url}">${( x ) => x.Name}</vscode-option> `
+)}
       </vscode-dropdown>
       <vscode-checkbox
-        :checked="${(x) => x.prerelase}"
-        @change=${(x, c) => x.PrerelaseChangedEvent(c.event.target!)}
+        :checked="${( x ) => x.prerelase}"
+        @change=${( x, c ) => x.PrerelaseChangedEvent( c.event.target! )}
         >Prerelease</vscode-checkbox
       >
     </div>
@@ -65,41 +66,50 @@ export type FilterEvent = {
   SourceUrl: string;
 };
 
-@customElement({
+@customElement( {
   name: "search-bar",
   template,
   styles: [codicon, styles],
-})
+} )
 export class SearchBar extends FASTElement {
   @Configuration configuration!: Configuration;
-  delayedPackagesLoader = lodash.debounce(() => this.EmitFilterChangedEvent(), 500);
+  delayedPackagesLoader = lodash.debounce( () => this.EmitFilterChangedEvent(), 500 );
   @observable prerelase: boolean = true;
   @observable filterQuery: string = "";
   @observable selectedSourceUrl: string = "";
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    window.addEventListener( 'message', ( event ) => {
+      const message = event.data;
+
+      if ( message.command === 'findType' ) {
+        this.filterQuery = message.typeName;
+      }
+    } );
+
     this.selectedSourceUrl = this.configuration.Configuration?.Sources[0].Url ?? "";
     this.EmitFilterChangedEvent();
   }
 
-  PrerelaseChangedEvent(target: EventTarget) {
-    this.prerelase = (target as HTMLInputElement).checked;
+  PrerelaseChangedEvent( target: EventTarget ) {
+    this.prerelase = ( target as HTMLInputElement ).checked;
     this.EmitFilterChangedEvent();
   }
 
-  FilterInputEvent(target: EventTarget) {
-    this.filterQuery = (target as HTMLInputElement).value;
+  FilterInputEvent( target: EventTarget ) {
+    this.filterQuery = ( target as HTMLInputElement ).value;
     this.delayedPackagesLoader();
   }
 
-  SelectSource(url: string) {
+  SelectSource( url: string ) {
     this.selectedSourceUrl = url;
     this.EmitFilterChangedEvent();
   }
 
   ReloadClicked() {
-    this.$emit("reload-invoked");
+    this.$emit( "reload-invoked" );
   }
 
   EmitFilterChangedEvent() {
@@ -108,6 +118,6 @@ export class SearchBar extends FASTElement {
       Prerelease: this.prerelase,
       SourceUrl: this.selectedSourceUrl,
     };
-    this.$emit("filter-changed", filterEvent);
+    this.$emit( "filter-changed", filterEvent );
   }
 }
